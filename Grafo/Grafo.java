@@ -38,8 +38,11 @@ public abstract class Grafo {
 		return true;
 	}
 
-	//Añade una arista con el peso deffault
+	//Añade una arista con el peso default
 	public boolean addArista(String _v1, String _v2) {
+		if(_v1.equals(_v2)) {
+			return false;
+		}
 		return this.addArista(_v1, _v2, 1);
 	}
 
@@ -71,33 +74,41 @@ public abstract class Grafo {
 			error.add("Vertice inexistente");
 			return error;
 		}
-		Boolean[]visitados = new Boolean[this.vertices.size()];
+		Integer[]visitados = new Integer[this.vertices.size()];
 		for(int i=0 ; i<visitados.length ; i++) {
-			visitados[i] = false;
+			visitados[i] = 0;
 		}
-		visitados[this.vertices.indexOf(inicio)] = true;
+		visitados[this.vertices.indexOf(inicio)] = 1;
 		
 		return DFS_Visitar(inicio, visitados);
 	}
 	
-	private List<String> DFS_Visitar(Vertice _v, Boolean[] _vi){
+	private List<String> DFS_Visitar(Vertice _v, Integer[] _vi){
+		/* 0 = No visitado
+		 * 1 = Visitado
+		 * 2 = Completado (Todos sus hijos fueron visitados)
+		 */
 		List<String>retorno = new ArrayList<String>();
 		//Obtengo los vertices adyacentes al actual
 		List<Vertice> adyacentes = _v.getAdyacentes();
-		System.out.println("Adyacentes de: " + _v.getEtiqueta());
-		for(Boolean b : _vi) {
-			System.out.print(b + "\t");
-		}
-		System.out.println("\n");
 		//Recorro la lista de adyacentes
+		retorno.add(_v.getEtiqueta());
+		
 		for(Vertice v : adyacentes) {
-			if(!_vi[this.vertices.indexOf(v)]) {
-				_vi[this.vertices.indexOf(v)] = true;
+			if(_vi[this.vertices.indexOf(v)].equals(0)) {
+				_vi[this.vertices.indexOf(v)] = 1;
 				retorno.addAll(DFS_Visitar(v, _vi));
 			}
 		}
 		
-		retorno.add(_v.getEtiqueta());
+		//Seteo el estado del vertice actual en 2 por que ya recorri todos sus hijos
+		_vi[this.vertices.indexOf(_v)] = 2;
+		
+		System.out.println("Adyacentes de: " + _v.getEtiqueta());
+		for(Integer b : _vi) {
+			System.out.print(b + "\t");
+		}
+		System.out.println("\n");
 		
 		return retorno;
 	}

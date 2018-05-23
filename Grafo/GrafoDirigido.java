@@ -1,5 +1,8 @@
 package Grafo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class GrafoDirigido extends Grafo {
 
 	@Override
@@ -33,4 +36,40 @@ public class GrafoDirigido extends Grafo {
 		}
 		return false;
 	}
+	
+	//Comienza el rercorrido DFS desde el inicio dado para determinar
+		public boolean tieneCiclo(String _e) {
+			Vertice inicio = this.getVertice(_e);
+			if(inicio==null) {
+				return false;
+			}
+			Integer[]visitados = new Integer[this.vertices.size()];
+			for(int i=0 ; i<visitados.length ; i++) {
+				visitados[i] = 0;
+			}
+			visitados[this.vertices.indexOf(inicio)] = 1;
+			
+			return tieneCiclo(inicio, visitados);
+		}
+		
+		private boolean tieneCiclo(Vertice _v, Integer[] _vi){
+			//Obtengo los vertices adyacentes al actual
+			List<Vertice> adyacentes = _v.getAdyacentes();
+			//Recorro la lista de adyacentes
+			for(Vertice v : adyacentes) {
+				if(_vi[this.vertices.indexOf(v)].equals(0)) {
+					_vi[this.vertices.indexOf(v)] = 1;
+					if (tieneCiclo(v, _vi)) {
+						return true;
+					}
+				}
+				else if (_vi[this.vertices.indexOf(v)].equals(1)) {
+					return true;
+				}
+			}
+			
+			_vi[this.vertices.indexOf(_v)] = 2;
+			
+			return false;
+		}
 }
